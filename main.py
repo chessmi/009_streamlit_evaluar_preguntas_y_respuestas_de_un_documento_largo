@@ -58,9 +58,23 @@ def generar_respuesta(
     # Generar predicciones
     predicciones = cadena_qa.apply(qa_real)
     
+    # FORZAR QUE LA EVALUACIÓN TAMBIÉN SEA EN ESPAÑOL
+    prompt_evaluacion = PromptTemplate(
+        input_variables=["question", "answer", "prediction"],
+        template=(
+            "Dada la siguiente pregunta y la respuesta correcta, evalúa si la respuesta generada por la IA es correcta o incorrecta. "
+            "Por favor, responde en español con una evaluación clara.\n\n"
+            "**Pregunta:** {question}\n"
+            "**Respuesta correcta:** {answer}\n"
+            "**Respuesta generada por la IA:** {prediction}\n\n"
+            "**Evaluación:** Responde solo con 'Correcto' o 'Incorrecto' seguido de una breve explicación en español."
+        )
+    )
+
     # Crear una cadena de evaluación
     cadena_evaluacion = QAEvalChain.from_llm(
-        llm=OpenAI(openai_api_key=api_key_openai)
+        llm=OpenAI(openai_api_key=api_key_openai),
+        prompt=prompt_evaluacion  # Se fuerza la evaluación en español
     )
     
     # Evaluar las respuestas generadas
