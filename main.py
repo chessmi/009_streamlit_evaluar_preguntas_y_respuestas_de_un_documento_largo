@@ -160,4 +160,4 @@ if len(resultado):
     st.write("Respuesta proporcionada por la aplicación de IA")
     st.info(respuesta["predicciones"][0]["result"])
     st.write("Por lo tanto, la respuesta de la aplicación de IA fue")
-    st.info(respuesta["resultados_evaluados"][0]["results"])
+    st.info(respuesta["resultados_evaluados"][0]) # Ahora en español
