@@ -4,7 +4,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
-from langchain.chains import LMChain
+from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
 def generar_respuesta(
