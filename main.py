@@ -5,6 +5,7 @@ from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain.evaluation.qa import QAEvalChain
+from langchain.prompts import PromptTemplate
 
 def generar_respuesta(
     archivo_subido,
@@ -39,12 +40,19 @@ def generar_respuesta(
         }
     ]
     
+    # FORZAR RESPUESTA EN ESPAÑOL CON UN PROMPT PERSONALIZADO
+    prompt_espanol = PromptTemplate(
+        input_variables=["context", "question"],
+        template="Usa la siguiente información para responder la pregunta en español de forma clara y concisa:\n\n{context}\n\nPregunta: {question}\n\nRespuesta en español:"
+    )
+    
     # Cadena de preguntas y respuestas (QA)
     cadena_qa = RetrievalQA.from_chain_type(
         llm=OpenAI(openai_api_key=api_key_openai),
         chain_type="stuff",
         retriever=recuperador,
-        input_key="question"
+        input_key="question",
+        chain_type_kwargs={"prompt": prompt_espanol}  # Se fuerza el español
     )
     
     # Generar predicciones
