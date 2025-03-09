@@ -4,7 +4,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
-from langchain.evaluation.qa import QAEvalChain
+from langchain.chains import LMChain
 from langchain.prompts import PromptTemplate
 
 def generar_respuesta(
@@ -71,24 +71,25 @@ def generar_respuesta(
         )
     )
 
-    # Crear una cadena de evaluación
-    cadena_evaluacion = QAEvalChain.from_llm(
+    # Crear una cadena LLM para la evaluación
+    llm_chain_evaluacion = LLMChain(
         llm=OpenAI(openai_api_key=api_key_openai),
-        prompt=prompt_evaluacion  # Se fuerza la evaluación en español
+        prompt=prompt_evaluacion
     )
     
-    # Evaluar las respuestas generadas
-    resultados_evaluados = cadena_evaluacion.evaluate(
-        qa_real,
-        predicciones,
-        question_key="question",
-        prediction_key="result",
-        answer_key="answer"
-    )
+    # Aplicar la evaluación manualmente
+    respuestas_evaluadas = []
+    for pred in predicciones:
+        evaluacion = llm_chain_evaluacion.run({
+            "question": pred["question"],
+            "answer": pred["answer"],
+            "prediction": pred["result"]
+        })
+        respuestas_evaluadas.append(evaluacion)
     
     respuesta = {
         "predicciones": predicciones,
-        "resultados_evaluados": resultados_evaluados
+        "resultados_evaluados": respuestas_evaluadas
     }
     
     return respuesta
